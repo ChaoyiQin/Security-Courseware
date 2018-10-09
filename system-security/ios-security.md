@@ -117,7 +117,7 @@ KPP就是运行在Application Process的EL3中，目的是用来保证：只读�
 - 加密存储，硬件随机数产生器，实现Data Protection密钥管理和完整性的全部密码学操作
 - 处理Touch ID传感器数据
 	- Touch ID数据交给处理器，处理器转发数据给SE
-	- 处理器不能读取数据，因为采用了一个会话密钥来加密并认证数据（密码学方案[AES-CCM](https://en.wikipedia.org/wiki/CCM_mode)）
+	- 处理器不能读取数据，因为采用了一个会话密钥来加密并认证数据（密码学方案[AES-CCM](https://en.wikipedia.org/wiki/CCM_mode)） 处理器无法泄露
 	- 会话密钥来自于Touch ID传感器和Secure Encalve基于共享密钥的协商
 
 ### Touch ID
