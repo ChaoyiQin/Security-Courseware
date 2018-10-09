@@ -76,7 +76,7 @@
 
 ### 安全启动链（Secure Boot Chain）
 
-1. 启动 -- 执行 --> Boot ROM (只读存储，作为硬件信任根)
+1. 启动 -- 执行 --> Boot ROM (只读存储，作为硬件信任根) 没有验证签名，越狱的关键
 2. -- 包含 --> Apple Root CA公钥
 2. -- 签名验证 --> Low-Level Bootloader (LLB)
 	- 若Boot ROM不能载入或验证LLB，进入DFU（Device Firmware Upgrade）模式 
@@ -394,12 +394,18 @@ case kOSSerializeNumber:
 为触发漏洞，向内核写入和读取数据采用[`IOUserClient`](https://developer.apple.com/library/content/samplecode/SimpleUserClient/Listings/User_Client_Info_txt.html)（[中文资料](http://www.tanhao.me/pieces/1547.html/)），该类负责应用程序与内核驱动程序间连接。具体触发漏洞的函数为`io_registry_entry_get_property_bytes`，其中读取过长缓冲的代码如下：
 
 ```cpp
-...else if( (off = OSDynamicCast( OSNumber, obj )))
-{	offsetBytes = off->unsigned64BitValue(); 
+...
+else if( (off = OSDynamicCast( OSNumber, obj )))
+{
+	offsetBytes = off->unsigned64BitValue(); 
 	len = off->numberOfBytes(); /* reads out malformed length, 0x200 */ 
-	bytes = &offsetBytes; /* bytes* ptr points to a stack variable */... 
-}...
-       *dataCnt = len;		bcopy( bytes, buf, len ); /* data leak */ }...
+	bytes = &offsetBytes; /* bytes* ptr points to a stack variable */
+... 
+}
+...
+       *dataCnt = len;
+		bcopy( bytes, buf, len ); /* data leak */ }
+...
 ```
 
 从泄露的内存中读取函数返回地址后，计算滑动量。
